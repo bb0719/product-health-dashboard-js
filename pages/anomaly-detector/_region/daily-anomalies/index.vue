@@ -19,9 +19,11 @@
         hide-default-footer
         class="elevation-1"
       ></v-data-table>
-      <div v-for="(anomaly, i) in anomalyData" :key="i" class="mt-5">
-        <AnomalyPlot :modelPredictions="anomaly" :ind="i"></AnomalyPlot>
-      </div>
+      <client-only>
+        <div v-for="(anomaly, i) in anomalyData" :key="i" class="mt-5">
+          <AnomalyPlot :modelPredictions="anomaly" :ind="i"></AnomalyPlot>
+        </div>
+      </client-only>
     </div>
   </div>
 </template>

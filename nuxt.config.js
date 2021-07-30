@@ -45,7 +45,10 @@ export default {
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
+  axios: {
+    baseURL: process.env.NODE_ENV === 'production' ?
+      'https://product-health-dashboard-v2-dot-g5-dexcom-prod-eu-2.ey.r.appspot.com' : 'http://localhost:3000'
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
@@ -74,5 +77,6 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
   },
+  target: 'server',
   ssr: false
 }

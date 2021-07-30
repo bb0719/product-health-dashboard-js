@@ -170,6 +170,10 @@ export default {
       }
     },
     prepPlotData() {
+      if (!process.browser) {
+        return
+      }
+
       this.clearPlotData()
       this.uclLine.x = [
         this.modelPredictions[0].ds,
@@ -271,8 +275,10 @@ export default {
     },
   },
   mounted() {
-    const { data, layout } = this.prepPlotData(this.modelPredictions)
-    Plotly.newPlot('plot-' + this.ind, data, layout, { responsive: true })
+    if (process.browser) {
+      const { data, layout } = this.prepPlotData(this.modelPredictions)
+      Plotly.newPlot('plot-' + this.ind, data, layout, { responsive: true })
+    }
   },
 }
 </script>
