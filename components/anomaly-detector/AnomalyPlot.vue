@@ -87,7 +87,7 @@ export default {
           opacity: 1,
           color: 'black',
         },
-        hoverinfo: 'training data',
+        name: 'training data',
       },
       testingData: {
         x: [],
@@ -98,7 +98,7 @@ export default {
           opacity: 1,
           color: 'green',
         },
-        hoverinfo: 'testing data',
+        name: 'testing data',
       },
       testSeperationLine: {
         x: [],
@@ -209,10 +209,10 @@ export default {
         this.predictions.x.push(row.ds)
         this.predictions.y.push(row.yhat)
         if (
-          (row.lower_anomaly_violation === 'True' ||
-            row.upper_anomaly_violation === 'True' ||
-            row.lcl_violation === 'True' ||
-            row.ucl_violation === 'True') &
+          (row.lower_anomaly_violation === true ||
+            row.upper_anomaly_violation === true ||
+            row.lcl_violation === true ||
+            row.ucl_violation === true) &
           (row.group === 'test')
         ) {
           this.anomalies.x.push(row.ds)
@@ -263,7 +263,7 @@ export default {
         title:
           this.modelPredictions[0].drilldown_dimension === 'None'
             ? `${this.modelPredictions[0].module}`
-            : `${this.modelPredictions[0].module}: ${this.modelPredictions[0].drilldown_dimension} = ${this.modelPredictions[0].drilldown_dimension_value}`,
+            : `${this.modelPredictions[0].module}: ${this.modelPredictions[0].drilldown_dimension} = ${this.modelPredictions[0].drilldown_dimension_display_value}`,
         plot_bgcolor: 'white',
         paper_bgcolor: 'white',
       }
