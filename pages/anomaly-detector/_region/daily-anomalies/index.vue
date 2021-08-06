@@ -13,17 +13,22 @@
       {{ $fetchState.error.message }}
     </div>
     <div v-else class="mt-5">
-      <v-data-table
-        :headers="headers"
-        :items="anomalies"
-        hide-default-footer
-        class="elevation-1"
-      ></v-data-table>
-      <client-only>
-        <div v-for="(anomaly, i) in anomalyData" :key="i" class="mt-5">
-          <AnomalyPlot :modelPredictions="anomaly" :ind="i"></AnomalyPlot>
-        </div>
-      </client-only>
+      <div v-if="anomalies.length > 0">
+        <v-data-table
+          :headers="headers"
+          :items="anomalies"
+          hide-default-footer
+          class="elevation-1"
+        ></v-data-table>
+        <client-only>
+          <div v-for="(anomaly, i) in anomalyData" :key="i" class="mt-5">
+            <AnomalyPlot :modelPredictions="anomaly" :ind="i"></AnomalyPlot>
+          </div>
+        </client-only>
+      </div>
+      <div v-else class="text-center">
+        <p class="green--text text-h3">No Anomalies Found</p>
+      </div>
     </div>
   </div>
 </template>
@@ -77,11 +82,7 @@ export default {
       ],
     }
   },
-  computed: {
-    title() {
-      return `${this.$route.params.region} Anomaly Detection & Metric Trending`
-    },
-  },
+  computed: {},
   async fetch() {
     this.anomalies = await this.$axios
       .get('/api/anomalies/anomalies/?region=' + this.$route.params.region)
