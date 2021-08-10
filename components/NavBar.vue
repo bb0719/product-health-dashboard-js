@@ -9,18 +9,6 @@
       >
         {{ appTitle }}
       </v-toolbar-title>
-      <!-- <v-toolbar-items class="ml-5 mr-5">
-        <v-btn
-          v-for="item in navbarItems"
-          :key="item.title"
-          :to="item.path"
-          text
-          nuxt
-        >
-          {{ item.title }}
-        </v-btn>
-      </v-toolbar-items> -->
-
       <v-toolbar-items class="ml-5 mr-5">
         <v-menu
           :close-on-click="closeOnClick"
