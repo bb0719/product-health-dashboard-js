@@ -38,9 +38,15 @@ export default {
       type: String,
       default: null,
     },
+    textCol: {
+      type: String,
+      default: null,
+    },
   },
   data() {
-    return {}
+    return {
+      plotData: [],
+    }
   },
   computed: {
     plotId() {
@@ -52,8 +58,8 @@ export default {
       const plotData = []
       const facetDefs = {}
       const layout = {
-        height: 600,
         title: { text: this.title, font: { size: 24 } },
+        showlegend: this.colorBy ? true : false,
       }
       layout.annotations = []
       let count = 1
@@ -92,6 +98,10 @@ export default {
             y: [row[this.y]],
             mode: 'lines+markers',
             name: group,
+            text: this.textCol ? [row[this.textCol]] : null,
+            hovertemplate: this.textCol
+              ? `<b>${this.x}</b>: %{x}<br><b>${this.y}</b>: %{y:.4f}<br><b>${this.textCol}</b>: %{text}`
+              : null,
           })
           if (this.facetBy) {
             layout.annotations.push({
@@ -113,6 +123,10 @@ export default {
             mode: 'lines+markers',
             name: group,
             yaxis: facet === 'y1' ? null : facet,
+            text: this.textCol ? [row[this.textCol]] : null,
+            hovertemplate: this.textCol
+              ? `<b>${this.x}</b>: %{x}<br><b>${this.y}</b>: %{y:.4f}<br><b>${this.textCol}</b>: %{text}`
+              : null,
           })
           if (this.facetBy) {
             layout.annotations.push({
@@ -130,6 +144,9 @@ export default {
         } else {
           plotData[trace].x.push(row[this.x])
           plotData[trace].y.push(row[this.y])
+          if (this.textCol) {
+            plotData[trace].text.push(row[this.textCol])
+          }
         }
       }
 
@@ -147,6 +164,8 @@ export default {
         }
       }
 
+      this.plotData = plotData
+      layout.height = (count - 1) * 300
       return {
         plotData,
         layout,

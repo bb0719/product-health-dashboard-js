@@ -11,6 +11,7 @@
         :colorBy="plot.colorBy"
         :facetBy="plot.facetBy"
         :title="plot.title"
+        :textCol="plot.textCol"
       />
     </client-only>
   </div>
@@ -139,6 +140,7 @@ export default {
           y: 'percent',
           colorBy: 'app_sw_version',
           facetBy: 'stream',
+          textCol: 'n_users',
         },
         {
           query: this.bulkDataPostQuery,
@@ -155,6 +157,7 @@ export default {
           y: 'percent',
           colorBy: 'app_sw_version',
           facetBy: 'stream',
+          textCol: 'n_users_crashing',
         },
         {
           query: this.BatteryOptQuery,
@@ -203,6 +206,7 @@ export default {
         y: query.y,
         colorBy: query.colorBy,
         facetBy: query.facetBy,
+        textCol: query.textCol,
       })
     }
     this.plotData = results
