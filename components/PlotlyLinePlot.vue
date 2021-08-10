@@ -42,6 +42,18 @@ export default {
       type: String,
       default: null,
     },
+    xLabel: {
+      type: String,
+      default: null,
+    },
+    yLabel: {
+      type: String,
+      default: null,
+    },
+    colorMapping: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
@@ -62,6 +74,31 @@ export default {
         showlegend: this.colorBy ? true : false,
       }
       layout.annotations = []
+      layout.annotations.push({
+        x: 0,
+        xshift: -50,
+        xanchor: 'left',
+        yanchor: 'middle',
+        text: this.yLabel,
+        font: { size: 16 },
+        xref: 'paper',
+        yref: 'paper',
+        textangle: 270,
+        showarrow: false,
+      })
+      layout.annotations.push({
+        y: 0,
+        yshift: -50,
+        xanchor: 'middle',
+        yanchor: 'bottom',
+        text: this.xLabel,
+        font: { size: 16 },
+        xref: 'paper',
+        yref: 'paper',
+        showarrow: false,
+      })
+      // layout.xaxis = { title: { text: this.xLabel } }
+      // layout.yaxis = { title: { text: this.yLabel } }
       let count = 1
       if (this.facetBy) {
         for (let row of this.sourceData) {
@@ -75,7 +112,12 @@ export default {
         let row = this.sourceData[i]
         let group = this.colorBy ? row[this.colorBy] : null
         let facet = this.facetBy ? 'y' + facetDefs[row[this.facetBy]] : 'y1'
+        let color =
+          this.colorBy && this.colorMapping && group
+            ? this.colorMapping[group]
+            : null
         let trace
+
         if (group == null && facet == null) {
           trace = 0
         } else if (facet == null && group != null) {
@@ -102,10 +144,12 @@ export default {
             hovertemplate: this.textCol
               ? `<b>${this.x}</b>: %{x}<br><b>${this.y}</b>: %{y:.4f}<br><b>${this.textCol}</b>: %{text}`
               : null,
+            marker: color ? { color: color } : {},
+            line: color ? { color: color } : {},
           })
           if (this.facetBy) {
             layout.annotations.push({
-              text: this.facetBy + ': ' + row[this.facetBy],
+              text: row[this.facetBy],
               font: {
                 size: 16,
               },
@@ -127,10 +171,12 @@ export default {
             hovertemplate: this.textCol
               ? `<b>${this.x}</b>: %{x}<br><b>${this.y}</b>: %{y:.4f}<br><b>${this.textCol}</b>: %{text}`
               : null,
+            marker: color ? { color: color } : {},
+            line: color ? { color: color } : {},
           })
           if (this.facetBy) {
             layout.annotations.push({
-              text: this.facetBy + ': ' + row[this.facetBy],
+              text: row[this.facetBy],
               font: {
                 size: 16,
               },
@@ -163,9 +209,10 @@ export default {
           }
         }
       }
-
+      layout.xaxis = { tickformat: '%Y-%m-%d' }
       this.plotData = plotData
       layout.height = (count - 1) * 300
+
       return {
         plotData,
         layout,
