@@ -15,7 +15,7 @@
       <client-only>
         <v-row justify="center" align="center">
           <v-col
-            lg="12"
+            cols="12"
             xl="6"
             v-for="(plot, ind) in plotData"
             :key="plot.title"
