@@ -1,7 +1,6 @@
 const express = require('express')
-import { date_range } from 'danfojs-node'
-import e from 'express'
 import { readStorageJSON, getBucket } from '../utilities/storage'
+import { executeQuery } from '../utilities/bigquery'
 
 const router = express.Router()
 
@@ -36,6 +35,16 @@ router.get('/predictionsChoices', async (req, res, next) => {
     const fileName = `anomaly_detection/dashboard/predictions/choice_mappings.json`
     const data = await readStorageJSON(bucket, fileName)
     res.status(200).send(data)
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.get('/query', async (req, res, next) => {
+  try {
+    const query = req.query.query
+    const data = await executeQuery(query)
+    res.status(200).send(data[0])
   } catch (err) {
     next(err)
   }
