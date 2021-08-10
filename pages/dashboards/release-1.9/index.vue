@@ -52,12 +52,13 @@ export default {
             postdate,
             case when stream = 'Phone7' then 'G6 iOS' when stream = 'Phone8' then 'G6 Android' else 'other' end as stream,
             case
-              when app_sw_version like '1.9%' and stream = 'Phone7' then '1.9 (G6 iOS)'
-              when app_sw_version like '1.9%' and stream = 'Phone8' then '1.9 (G6 Android)'
-              when app_sw_version not like '1.9%' and stream = 'Phone7' then 'Other Version (G6 iOS)'
-              when app_sw_version not like '1.9%' and stream = 'Phone8' then 'Other Version (G6 Android)'
+              when app_sw_version like '1.9%' and stream = 'Phone7' then 'G6 iOS 1.9'
+              when app_sw_version like '1.9%' and stream = 'Phone8' then 'G6 Android 1.9'
+              when app_sw_version not like '1.9%' and stream = 'Phone7' then 'G6 iOS Other Version'
+              when app_sw_version not like '1.9%' and stream = 'Phone8' then 'G6 Android Other Version'
               else 'Other Version'
-            end as app_sw_version,            sum(egvs.n_users_posting_egvs) as n_users
+            end as app_sw_version,
+            sum(egvs.n_users_posting_egvs) as n_users
           FROM
             \`prod-us-5g-dapcurated-1.anomaly_detection.config_cgm_aggregate_info_daily\`
           WHERE postdate between '${this.startDate}' and '${this.endDate}'
@@ -67,7 +68,7 @@ export default {
         select postdate, stream, app_sw_version, n_users, sum(n_users) over(partition by postdate, stream) n_users_total,
           n_users/(sum(n_users) over(partition by postdate, stream)) * 100 as percent
         from users
-        order by postdate, stream
+        order by 3,1
       `
     },
     bulkDataPostQuery() {
@@ -81,7 +82,7 @@ export default {
           WHERE postdate between '${this.startDate}' and '${this.endDate}'
             and stream in ("Phone7", "Phone8")
           GROUP BY 1,2
-          ORDER BY 1,2
+          ORDER BY 2,1
       `
     },
     crashesQuery() {
@@ -90,12 +91,13 @@ export default {
             postdate,
             case when stream = 'Phone7' then 'G6 iOS' when stream = 'Phone8' then 'G6 Android' else 'other' end as stream,
             case
-              when app_sw_version like '1.9%' and stream = 'Phone7' then '1.9 (G6 iOS)'
-              when app_sw_version like '1.9%' and stream = 'Phone8' then '1.9 (G6 Android)'
-              when app_sw_version not like '1.9%' and stream = 'Phone7' then 'Other Version (G6 iOS)'
-              when app_sw_version not like '1.9%' and stream = 'Phone8' then 'Other Version (G6 Android)'
+              when app_sw_version like '1.9%' and stream = 'Phone7' then 'G6 iOS 1.9'
+              when app_sw_version like '1.9%' and stream = 'Phone8' then 'G6 Android 1.9'
+              when app_sw_version not like '1.9%' and stream = 'Phone7' then 'G6 iOS Other Version'
+              when app_sw_version not like '1.9%' and stream = 'Phone8' then 'G6 Android Other Version'
               else 'Other Version'
-            end as app_sw_version,            sum(egvs.n_users_posting_egvs) as n_users,
+            end as app_sw_version,
+            sum(egvs.n_users_posting_egvs) as n_users,
             sum(crashes.n_users_crashing) as n_users_crashing,
             sum(crashes.n_users_crashing)/sum(egvs.n_users_posting_egvs) * 100 as percent
           FROM
@@ -103,7 +105,7 @@ export default {
           WHERE postdate between '${this.startDate}' and '${this.endDate}'
             and stream in ("Phone7", "Phone8")
           GROUP BY 1,2,3
-          ORDER BY 1,2,3
+          ORDER BY 3,1
       `
     },
     BatteryOptQuery() {
@@ -111,10 +113,10 @@ export default {
           SELECT
             postdate,
             case
-              when ending_device_info.app_sw_version like '1.9%' and stream = 'Phone7' then '1.9 (G6 iOS)'
-              when ending_device_info.app_sw_version like '1.9%' and stream = 'Phone8' then '1.9 (G6 Android)'
-              when ending_device_info.app_sw_version not like '1.9%' and stream = 'Phone7' then 'Other Version (G6 iOS)'
-              when ending_device_info.app_sw_version not like '1.9%' and stream = 'Phone8' then 'Other Version (G6 Android)'
+              when ending_device_info.app_sw_version like '1.9%' and stream = 'Phone7' then 'G6 iOS 1.9'
+              when ending_device_info.app_sw_version like '1.9%' and stream = 'Phone8' then 'G6 Android 1.9'
+              when ending_device_info.app_sw_version not like '1.9%' and stream = 'Phone7' then 'G6 iOS Other Version'
+              when ending_device_info.app_sw_version not like '1.9%' and stream = 'Phone8' then 'G6 Android Other Version'
               else 'Other Version'
             end as app_sw_version,
             count(distinct if(error_logs.n_ignoring_battery_opt_logs > 0, patientid, null)) as n_users_ignoring_battery_opt,
@@ -127,7 +129,7 @@ export default {
             and egvs.n_egvs > 0
             and ending_device_info.app_sw_version is not null
           GROUP BY 1,2
-          ORDER BY 1,2
+          ORDER BY 2,1
       `
     },
     BatteryOptQueryOverall() {
@@ -144,7 +146,7 @@ export default {
             and stream = "Phone8"
             and egvs.n_egvs > 0
           GROUP BY 1,2
-          ORDER BY 1,2
+          ORDER BY 2,1
       `
     },
     PacketCaptureQuery() {
@@ -153,10 +155,10 @@ export default {
             postdate,
             case when stream = 'Phone7' then 'G6 iOS' when stream = 'Phone8' then 'G6 Android' else 'other' end as stream,
             case
-              when app_sw_version like '1.9%' and stream = 'Phone7' then '1.9 (G6 iOS)'
-              when app_sw_version like '1.9%' and stream = 'Phone8' then '1.9 (G6 Android)'
-              when app_sw_version not like '1.9%' and stream = 'Phone7' then 'Other Version (G6 iOS)'
-              when app_sw_version not like '1.9%' and stream = 'Phone8' then 'Other Version (G6 Android)'
+              when app_sw_version like '1.9%' and stream = 'Phone7' then 'G6 iOS 1.9'
+              when app_sw_version like '1.9%' and stream = 'Phone8' then 'G6 Android 1.9'
+              when app_sw_version not like '1.9%' and stream = 'Phone7' then 'G6 iOS Other Version'
+              when app_sw_version not like '1.9%' and stream = 'Phone8' then 'G6 Android Other Version'
               else 'Other Version'
             end as app_sw_version,
             sum(egvs.n_realtime_egvs) as n_realtime_egvs,
@@ -167,7 +169,7 @@ export default {
           WHERE postdate between '${this.startDate}' and '${this.endDate}'
             and stream in ("Phone7", "Phone8")
           GROUP BY 1,2,3
-          ORDER BY 1,2,3
+          ORDER BY 3,1
       `
     },
     queries() {
@@ -183,10 +185,10 @@ export default {
           xLabel: 'Post Date',
           yLabel: 'Percent Users',
           colorMapping: {
-            'Other Version (G6 Android)': 'blue',
-            '1.9 (G6 Android)': 'red',
-            'Other Version (G6 iOS)': 'orange',
-            '1.9 (G6 iOS)': 'green',
+            'G6 Android Other Version': 'blue',
+            'G6 Android 1.9': 'red',
+            'G6 iOS Other Version': 'orange',
+            'G6 iOS 1.9': 'green',
           },
         },
         {
@@ -214,10 +216,10 @@ export default {
           xLabel: 'Post Date',
           yLabel: 'Percent Users',
           colorMapping: {
-            'Other Version (G6 Android)': 'blue',
-            '1.9 (G6 Android)': 'red',
-            'Other Version (G6 iOS)': 'orange',
-            '1.9 (G6 iOS)': 'green',
+            'G6 Android Other Version': 'blue',
+            'G6 Android 1.9': 'red',
+            'G6 iOS Other Version': 'orange',
+            'G6 iOS 1.9': 'green',
           },
         },
         {
@@ -231,8 +233,10 @@ export default {
           xLabel: 'Post Date',
           yLabel: 'Percent Users',
           colorMapping: {
-            'Other Version (G6 Android)': 'blue',
-            '1.9 (G6 Android)': 'red',
+            'G6 Android Other Version': 'blue',
+            'G6 Android 1.9': 'red',
+            'G6 iOS Other Version': 'orange',
+            'G6 iOS 1.9': 'green',
           },
         },
         {
@@ -258,10 +262,10 @@ export default {
           xLabel: 'Post Date',
           yLabel: 'Packet Capture Percent',
           colorMapping: {
-            'Other Version (G6 Android)': 'blue',
-            '1.9 (G6 Android)': 'red',
-            'Other Version (G6 iOS)': 'orange',
-            '1.9 (G6 iOS)': 'green',
+            'G6 Android Other Version': 'blue',
+            'G6 Android 1.9': 'red',
+            'G6 iOS Other Version': 'orange',
+            'G6 iOS 1.9': 'green',
           },
         },
       ]
@@ -283,6 +287,7 @@ export default {
             return newRow
           })
         )
+
       results.push({
         ...query,
         sourceData: data,
