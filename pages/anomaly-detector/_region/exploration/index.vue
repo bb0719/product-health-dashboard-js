@@ -63,7 +63,6 @@
 </template>
 
 <script>
-import { isNull } from 'plotly.js-dist'
 import AnomalyDetectorToolBar from '~/components/anomaly-detector/AnomalyDetectorToolBar.vue'
 import AnomalyPlot from '~/components/anomaly-detector/AnomalyPlot.vue'
 

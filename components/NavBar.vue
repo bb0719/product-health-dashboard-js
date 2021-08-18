@@ -70,6 +70,10 @@ export default {
           title: 'Misc Dashboards',
           children: [
             { title: 'G6 US 1.9 Release', path: '/dashboards/release-1.9' },
+            {
+              title: 'Simplicity 1.2.5 Release',
+              path: '/dashboards/simplicity-1.2.5',
+            },
           ],
         },
       ],

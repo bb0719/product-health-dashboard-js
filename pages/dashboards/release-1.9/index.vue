@@ -1,40 +1,18 @@
 <template>
   <div>
-    <div v-if="$fetchState.pending" class="text-center mt-5">
-      <v-progress-circular
-        :size="200"
-        indeterminate
-        color="primary"
-      ></v-progress-circular>
-    </div>
-    <div v-else-if="$fetchState.error">
-      <p>Something went wrong...</p>
-      {{ $fetchState.error.message }}
-    </div>
-    <div v-else class="mt-5">
-      <client-only>
-        <v-row justify="center" align="center">
-          <v-col
-            cols="12"
-            xl="6"
-            v-for="(plot, ind) in plotData"
-            :key="plot.title"
-          >
-            <v-card class="ma-5">
-              <PlotlyLinePlot v-bind="plot" :ind="ind" />
-            </v-card>
-          </v-col>
-        </v-row>
-      </client-only>
-    </div>
+    <PlotlyAnomalyTimeSeriesDashboard
+      :queryDefs="queryDefs"
+      title="G6 US 1.9 Release"
+    ></PlotlyAnomalyTimeSeriesDashboard>
   </div>
 </template>
 
 <script>
-import PlotlyLinePlot from '~/components/PlotlyLinePlot.vue'
+import PlotlyAnomalyTimeSeriesDashboard from '~/components/anomaly-detector/PlotlyAnomalyTimeSeriesDashboard.vue'
 
 export default {
-  components: { PlotlyLinePlot },
+  components: { PlotlyAnomalyTimeSeriesDashboard },
+
   data() {
     return {
       plotData: [],
@@ -172,7 +150,7 @@ export default {
           ORDER BY 3,1
       `
     },
-    queries() {
+    queryDefs() {
       return [
         {
           query: this.upgradeCurveQuery,
@@ -270,30 +248,6 @@ export default {
         },
       ]
     },
-  },
-  async fetch() {
-    const results = []
-    let data
-    for (let i = 0; i < this.queries.length; i++) {
-      let query = this.queries[i]
-      data = await this.$axios
-        .get('/api/anomalies/query', {
-          params: { query: query.query },
-        })
-        .then((res) =>
-          res.data.map((row) => {
-            const newRow = { ...row }
-            newRow.postdate = newRow.postdate.value
-            return newRow
-          })
-        )
-
-      results.push({
-        ...query,
-        sourceData: data,
-      })
-    }
-    this.plotData = results
   },
 }
 </script>
