@@ -1,21 +1,18 @@
 <template>
   <div>
-    <div :id="plotId" />
+    <PlotlyPlot :traces="traces" :layout="layout" />
   </div>
 </template>
 
 <script>
-import Plotly from 'plotly.js-dist/plotly'
+import PlotlyPlot from '~/components/PlotlyPlot.vue'
 
 export default {
+  components: { PlotlyPlot },
   props: {
     modelPredictions: {
       default: () => [],
       type: Array,
-    },
-    ind: {
-      type: Number,
-      default: 0,
     },
   },
   data() {
@@ -132,11 +129,13 @@ export default {
         line: { color: 'purple', width: 1, dash: 'dash' },
         hoverinfo: 'none',
       },
+      traces: [],
+      layout: {},
     }
   },
   computed: {
     plotId() {
-      return 'plot-' + this.ind
+      return 'plot-' + this.guidGenerator()
     },
   },
   watch: {
@@ -144,11 +143,30 @@ export default {
       deep: true,
       handler() {
         const { data, layout } = this.prepPlotData(this.modelPredictions)
-        Plotly.newPlot('plot-' + this.ind, data, layout, { responsive: true })
+        this.traces = data
+        this.layout = layout
       },
     },
   },
   methods: {
+    guidGenerator() {
+      const S4 = () =>
+        (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+      return (
+        S4() +
+        S4() +
+        '-' +
+        S4() +
+        '-' +
+        S4() +
+        '-' +
+        S4() +
+        '-' +
+        S4() +
+        S4() +
+        S4()
+      )
+    },
     clearPlotData() {
       const output = [
         this.confIntLower,
@@ -277,7 +295,8 @@ export default {
   mounted() {
     if (process.browser) {
       const { data, layout } = this.prepPlotData(this.modelPredictions)
-      Plotly.newPlot('plot-' + this.ind, data, layout, { responsive: true })
+      this.traces = data
+      this.layout = layout
     }
   },
 }

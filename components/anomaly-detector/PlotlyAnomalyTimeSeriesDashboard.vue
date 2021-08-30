@@ -13,7 +13,16 @@
             :key="plotDef.title"
           >
             <v-card class="ma-5">
-              <PlotlyLinePlot v-bind="plotDef" :ind="ind" />
+              <PlotlyLinePlot
+                v-if="plotDef.plotType == 'line' || !plotDef.plotType"
+                v-bind="plotDef"
+                :ind="ind"
+              />
+              <PlotlyHistPlot
+                v-if="plotDef.plotType == 'dist'"
+                v-bind="plotDef"
+                :ind="ind"
+              />
             </v-card>
           </v-col>
         </v-row>
@@ -24,10 +33,11 @@
 
 <script>
 import PlotlyLinePlot from '~/components/PlotlyLinePlot.vue'
+import PlotlyHistPlot from '~/components/PlotlyHistPlot.vue'
 import SpinnerErrorContent from '~/components/SpinnerErrorContent.vue'
 
 export default {
-  components: { PlotlyLinePlot, SpinnerErrorContent },
+  components: { PlotlyLinePlot, PlotlyHistPlot, SpinnerErrorContent },
   props: {
     queryDefs: {
       required: true,

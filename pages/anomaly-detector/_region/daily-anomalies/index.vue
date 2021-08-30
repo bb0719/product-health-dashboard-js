@@ -21,9 +21,18 @@
           class="elevation-1"
         ></v-data-table>
         <client-only>
-          <div v-for="(anomaly, i) in anomalyData" :key="i" class="mt-5">
-            <AnomalyPlot :modelPredictions="anomaly" :ind="i"></AnomalyPlot>
-          </div>
+          <v-row justify="center" align="center">
+            <v-col
+              cols="12"
+              xl="6"
+              v-for="(anomaly, i) in anomalyData"
+              :key="i"
+            >
+              <v-card class="ma-5 pa-5">
+                <AnomalyPlot :modelPredictions="anomaly"></AnomalyPlot>
+              </v-card>
+            </v-col>
+          </v-row>
         </client-only>
       </div>
       <div v-else class="text-center">

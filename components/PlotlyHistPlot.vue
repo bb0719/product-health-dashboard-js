@@ -19,10 +19,6 @@ export default {
       type: String,
       required: true,
     },
-    y: {
-      type: String,
-      required: true,
-    },
     title: {
       type: String,
       default: null,
@@ -51,9 +47,9 @@ export default {
       type: Object,
       default: () => {},
     },
-    mode: {
-      type: String,
-      default: 'lines+markers',
+    binWidth: {
+      type: Number,
+      required: false,
     },
   },
   data() {
@@ -153,12 +149,14 @@ export default {
         if (plotData.length === 0) {
           plotData.push({
             x: [row[this.x]],
-            y: [row[this.y]],
-            mode: this.mode,
+            type: 'histogram',
+            histnorm: 'probability',
+            xbins: this.binWidth ? { size: this.binWidth } : null,
+            opacity: 0.5,
             name: group,
             text: this.textCol ? [row[this.textCol]] : null,
             hovertemplate: this.textCol
-              ? `<b>${this.x}</b>: %{x}<br><b>${this.y}</b>: %{y:.4f}<br><b>${this.textCol}</b>: %{text}`
+              ? `<b>${this.x}</b>: %{x}<br><b>${this.textCol}</b>: %{text}`
               : null,
             marker: color ? { color: color } : {},
             line: color ? { color: color } : {},
@@ -179,13 +177,15 @@ export default {
         } else if (trace === -1) {
           plotData.push({
             x: [row[this.x]],
-            y: [row[this.y]],
-            mode: this.mode,
+            opacity: 0.5,
+            type: 'histogram',
+            histnorm: 'probability',
+            xbins: this.binWidth ? { size: this.binWidth } : null,
             name: group,
             yaxis: facet === 'y1' ? null : facet,
             text: this.textCol ? [row[this.textCol]] : null,
             hovertemplate: this.textCol
-              ? `<b>${this.x}</b>: %{x}<br><b>${this.y}</b>: %{y:.4f}<br><b>${this.textCol}</b>: %{text}`
+              ? `<b>${this.x}</b>: %{x}<br><b>${this.textCol}</b>: %{text}`
               : null,
             marker: color ? { color: color } : {},
             line: color ? { color: color } : {},
@@ -205,7 +205,6 @@ export default {
           }
         } else {
           plotData[trace].x.push(row[this.x])
-          plotData[trace].y.push(row[this.y])
           if (this.textCol) {
             plotData[trace].text.push(row[this.textCol])
           }
@@ -216,18 +215,19 @@ export default {
         if (i == 1) {
           layout.yaxis = {
             domain: [0, 1 / (count - 1) - 0.05],
-            rangemode: 'tozero',
+            // rangemode: 'tozero',
           }
         } else {
           layout['yaxis' + i] = {
             domain: [(1 / (count - 1)) * (i - 1), (1 / (count - 1)) * i - 0.05],
-            rangemode: 'tozero',
+            // rangemode: 'tozero',
           }
         }
       }
       // layout.xaxis = { tickformat: '%Y-%m-%d' }
       this.plotData = plotData
       layout.height = (count - 1) * 300
+      layout.barmode = 'overlay'
 
       return {
         plotData,
